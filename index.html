@@ -11,10 +11,9 @@
             --bg: #FFF9F0; 
             --border: #222; 
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: #333; }
-        .container { max-width: 450px; margin: auto; background: white; border: 3px solid var(--border); border-radius: 20px; padding: 25px; box-shadow: 10px 10px 0px var(--border); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: #333; margin: 0; }
+        .container { max-width: 450px; margin: 20px auto; background: white; border: 3px solid var(--border); border-radius: 20px; padding: 25px; box-shadow: 10px 10px 0px var(--border); }
         
-        /* Header Toko */
         .store-name { text-align: center; font-size: 2em; font-weight: 900; color: var(--primary); text-transform: uppercase; margin-bottom: 5px; text-shadow: 2px 2px 0px var(--border); }
         .subtitle { text-align: center; font-size: 0.85em; color: #555; margin-bottom: 25px; border-bottom: 2px dashed #ccc; padding-bottom: 15px; }
         
@@ -26,11 +25,18 @@
         .price-box::before { content: "💰"; position: absolute; left: 15px; top: 15px; font-size: 1.2em; }
         .price-val { font-size: 1.8em; font-weight: 800; color: var(--primary); }
         
+        .redeem-section { background: #FFFDE7; border: 2px dashed var(--primary); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+
         .btn-order { width: 100%; background: var(--primary); color: white; border: 2px solid var(--border); padding: 18px; border-radius: 12px; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 0 #804600; }
-        .btn-order:hover { background: #e67e00; }
         .btn-order:active { transform: translateY(3px); box-shadow: 0 2px 0 #804600; }
         
         .footer-note { font-size: 0.75em; margin-top: 20px; line-height: 1.5; background: #FFF3E0; padding: 12px; border-radius: 10px; border: 1px solid var(--primary); }
+        
+        .snk-section { margin-top: 15px; font-size: 0.7em; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
+        .snk-title { font-weight: bold; color: #444; margin-bottom: 5px; cursor: pointer; display: flex; justify-content: space-between; }
+
+        /* Tombol Admin Melayang */
+        .admin-float { position: fixed; bottom: 20px; right: 20px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--border); box-shadow: 4px 4px 0px var(--border); cursor: pointer; text-decoration: none; font-size: 24px; z-index: 99; }
     </style>
 </head>
 <body>
@@ -63,89 +69,60 @@
     <label>👤 Data Pemesan</label>
     <input type="text" id="buyer-name" placeholder="Nama Lengkap">
     <input type="text" id="buyer-email" placeholder="Username / Email Apps">
-    <input type="number" id="buyer-phone" placeholder="Nomor WhatsApp (Aktif)">
+    <input type="number" id="buyer-phone" placeholder="Nomor WhatsApp">
+
+    <div class="redeem-section">
+        <label>🎁 Kode Promo (SHEY-XXXXX)</label>
+        <input type="text" id="redeem-code" placeholder="Masukkan kode jika ada" onkeyup="this.value = this.value.toUpperCase()">
+    </div>
 
     <button class="btn-order" onclick="sendOrder()">BELI SEKARANG</button>
 
     <div class="footer-note">
         <b>Instruksi Pembayaran:</b><br>
-        1. Transfer sesuai nominal ke nomor: <b>0895324866749</b><br>
-        2. Klik tombol di atas untuk konfirmasi WhatsApp<br>
-        3. <b>Wajib</b> kirim bukti screenshot transfer di chat.
+        1. Transfer ke: <b>0895324866749</b><br>
+        2. Kirim bukti screenshot transfer ke WhatsApp.<br>
+        3. Proses 5-10 menit setelah konfirmasi.
+    </div>
+
+    <div class="snk-section">
+        <div class="snk-title" onclick="toggleSnK()">Syarat & Ketentuan (Klik untuk baca) ▾</div>
+        <div id="snk-content" style="display: none; padding-top: 5px;">
+            • Kode promo <b>SHEY-</b> hanya bisa digunakan 1x per perangkat.<br>
+            • Bonus Capcut 7 Hari diberikan setelah pembayaran sukses.<br>
+            • Diskon promo tidak dapat diuangkan.<br>
+            • Semua akun bergaransi resmi.<br>
+            • Membeli = Setuju.
+        </div>
     </div>
 </div>
 
+<a href="https://wa.me/62895324866749?text=Halo%20Sheyya,%20saya%20mau%20tanya%20seputar%20aplikasi%20premium" class="admin-float" target="_blank">💬</a>
+
 <script>
 const dataProduk = {
-    "Netflix": [
-        {name: "Netflix 1P2U", price: 23200},
-        {name: "Netflix 1P1U", price: 33200},
-        {name: "Netflix 1 Minggu", price: 14300}
-    ],
+    "Netflix": [{name: "*Netflix 1P2U", price: 23200}, {name: "*Netflix 1P1U", price: 33200}, {name: "Netflix 1 Minggu", price: 14300}],
     "Viu": [{name: "Viu Premium Lifetime", price: 2000}],
-    "Youku": [{name: "Youku Sharing 1 Bulan", price: 10340}],
-    "Prime Video": [{name: "Prime Video Private 1 Bulan", price: 8200}],
-    "Capcut": [
-        {name: "Capcut Sharing 1 Bulan Promo", price: 3700},
-        {name: "Capcut Sharing 1 Bulan", price: 4500},
-        {name: "Capcut Sharing 6 Bulan", price: 7300},
-        {name: "Capcut Sharing 12 Bulan", price: 10000},
-        {name: "Capcut Private 1 Bulan", price: 5320},
-        {name: "Capcut Private 6 Bulan", price: 17000},
-        {name: "Capcut Private 12 Bulan", price: 26500}
-    ],
-    "Canva": [
-        {name: "Canva Member 1 Bulan", price: 3000},
-        {name: "Canva Member 1 Tahun", price: 5200},
-        {name: "Canva Owner 1 Bulan", price: 6000},
-        {name: "Canva Owner 1 Tahun", price: 27400}
-    ],
-    "Bstation": [
-        {name: "Bstation Sharing 1 Bulan", price: 6000},
-        {name: "Bstation Private 1 Bulan", price: 32000}
-    ],
+    "Capcut": [{name: "Sharing 1 Bulan", price: 3700}, {name: "Private 1 Bulan", price: 5320}],
     "YouTube": [{name: "YouTube Indplan 1 Bulan", price: 13300}],
-    "WeTV": [
-        {name: "WeTV Sharing 1 Bulan 8U", price: 6000},
-        {name: "WeTV Sharing 1 Bulan 5U", price: 9000},
-        {name: "WeTV Private 1 Bulan", price: 23000}
-    ],
-    "Vidio": [
-        {name: "Vidio Platinum Sharing", price: 20000},
-        {name: "Vidio Platinum Private", price: 37000}
-    ],
-    "Alight Motion": [
-        {name: "AM Private 1 Tahun", price: 2500},
-        {name: "AM Private 2 Tahun", price: 5000}
-    ],
-    "Picsart": [
-        {name: "Picsart Sharing 1 Bulan", price: 4000},
-        {name: "Picsart Private 1 Bulan", price: 7320}
-    ],
-    "Crunchyroll": [{name: "Crunchyroll Sharing 35 Hari", price: 6000}],
-    "HBO Max": [
-        {name: "HBO Max Sharing 1 Bulan", price: 17000},
-        {name: "HBO Max Standar Private 1 Bulan", price: 80000}
-    ],
-    "VSCO": [{name: "VSCO Plus Andro/iOS 1 Tahun", price: 8000}]
+    "Vidio": [{name: "Vidio Platinum Sharing", price: 20000}],
+    "Canva": [{name: "Canva Member 1 Bulan", price: 3000}],
+    "VSCO": [{name: "VSCO Plus 1 Tahun", price: 8000}]
 };
 
 const catEl = document.getElementById('category');
 const servEl = document.getElementById('service');
 const priceEl = document.getElementById('display-price');
 
-// Load Categories
 Object.keys(dataProduk).sort().forEach(cat => {
-    let opt = new Option(cat, cat);
-    catEl.add(opt);
+    catEl.add(new Option(cat, cat));
 });
 
 function updateService() {
     servEl.innerHTML = '<option value="">-- Pilih Durasi --</option>';
     if (catEl.value) {
         dataProduk[catEl.value].forEach(item => {
-            let opt = new Option(item.name, item.price);
-            servEl.add(opt);
+            servEl.add(new Option(item.name, item.price));
         });
     }
     updatePrice();
@@ -156,34 +133,38 @@ function updatePrice() {
     priceEl.innerText = price ? "Rp " + parseInt(price).toLocaleString('id-ID') : "Rp 0";
 }
 
+function toggleSnK() {
+    const snk = document.getElementById('snk-content');
+    snk.style.display = snk.style.display === "none" ? "block" : "none";
+}
+
 function sendOrder() {
     const serviceName = servEl.options[servEl.selectedIndex]?.text;
-    const price = priceEl.innerText;
-    const pay = document.getElementById('payment').value;
     const name = document.getElementById('buyer-name').value;
     const email = document.getElementById('buyer-email').value;
     const phone = document.getElementById('buyer-phone').value;
+    const code = document.getElementById('redeem-code').value.trim().toUpperCase();
 
     if (!catEl.value || !servEl.value || !name || !email || !phone) {
-        alert("Ups! Lengkapi semua data dan pilih produk dulu ya.");
-        return;
+        alert("Lengkapi data pemesan dulu ya!"); return;
     }
 
-    const format = `Halo Sheyya, saya mau order!
+    let hadiah = "Tidak Ada";
+    if (code.startsWith("SHEY-") && code.length >= 9) {
+        let used = JSON.parse(localStorage.getItem('sh_used_v2') || "[]");
+        if (used.includes(code)) {
+            alert("Yah, kode ini sudah pernah kamu pakai!"); return;
+        }
+        
+        const last = code.slice(-1);
+        hadiah = /[02468]/.test(last) ? "DISKON 2%" : "FREE CAPCUT 7 HARI";
+        used.push(code);
+        localStorage.setItem('sh_used_v2', JSON.stringify(used));
+    }
 
-Nama: ${name}
-Produk: ${serviceName}
-Username / Email: ${email}
-Nomor Telf: ${phone}
-Metode Bayar: ${pay}
-
-Pembayaran ke nomor 0895324866749
-(serta bukti pembayaran)`;
-
-    const waLink = `https://wa.me/62895324866749?text=${encodeURIComponent(format)}`;
-    window.open(waLink, '_blank');
+    const format = `Halo Sheyya!\n\nNama: ${name}\nOrder: ${serviceName}\nEmail: ${email}\nMetode: ${document.getElementById('payment').value}\n\nREDEEM: ${code || "-"}\nHADIAH: *${hadiah}*\n\nSudah transfer ya kak!`;
+    window.open(`https://wa.me/62895324866749?text=${encodeURIComponent(format)}`, '_blank');
 }
 </script>
-
 </body>
 </html>
